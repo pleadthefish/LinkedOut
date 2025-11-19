@@ -338,7 +338,8 @@ async function scrapeLinkedInProfile() {
         let potentialCompanies = [];
 
         for (const span of companySpans) {
-          let text = span.textContent.trim();
+          // Try innerText first (cleaner), fallback to textContent
+          let text = span.innerText?.trim() || span.textContent.trim();
 
           // Log what we found
           console.log(`  Checking span: "${text.substring(0, 50)}"`);
@@ -362,17 +363,30 @@ async function scrapeLinkedInProfile() {
           // Company is usually in format "Company · Full-time" or just "Company"
           if (text.includes('·')) {
             const parts = text.split('·');
-            const companyPart = parts[0].trim();
+            let companyPart = parts[0].trim();
 
-            // Deduplicate company name
+            // Triple-layer deduplication (same as role field)
+
+            // Method 1: Word-by-word duplicate check
             const companyWords = companyPart.split(/\s+/);
             const companyHalfLen = Math.floor(companyWords.length / 2);
             if (companyWords.length > 1 && companyWords.length % 2 === 0) {
               const firstHalf = companyWords.slice(0, companyHalfLen).join(' ');
               const secondHalf = companyWords.slice(companyHalfLen).join(' ');
               if (firstHalf === secondHalf) {
-                text = firstHalf;
-                console.log(`  ✂️ Deduped company: "${text}"`);
+                companyPart = firstHalf;
+                console.log(`  ✂️ Dedup method 1 (words): "${companyPart}"`);
+              }
+            }
+
+            // Method 2: Character-by-character duplicate check
+            const halfLen = Math.floor(companyPart.length / 2);
+            if (companyPart.length > 4 && companyPart.length % 2 === 0) {
+              const firstHalfChars = companyPart.substring(0, halfLen);
+              const secondHalfChars = companyPart.substring(halfLen);
+              if (firstHalfChars === secondHalfChars) {
+                companyPart = firstHalfChars;
+                console.log(`  ✂️ Dedup method 2 (chars): "${companyPart}"`);
               }
             }
 
@@ -380,8 +394,33 @@ async function scrapeLinkedInProfile() {
               potentialCompanies.push(companyPart);
             }
           } else {
-            // No separator, might be just company name
-            potentialCompanies.push(text);
+            // No separator, might be just company name - apply deduplication here too
+            let companyText = text;
+
+            // Method 1: Word-by-word
+            const words = companyText.split(/\s+/);
+            const halfLength = Math.floor(words.length / 2);
+            if (words.length > 1 && words.length % 2 === 0) {
+              const firstHalf = words.slice(0, halfLength).join(' ');
+              const secondHalf = words.slice(halfLength).join(' ');
+              if (firstHalf === secondHalf) {
+                companyText = firstHalf;
+                console.log(`  ✂️ Dedup method 1 (words): "${companyText}"`);
+              }
+            }
+
+            // Method 2: Character-by-character
+            const halfLen = Math.floor(companyText.length / 2);
+            if (companyText.length > 4 && companyText.length % 2 === 0) {
+              const firstHalfChars = companyText.substring(0, halfLen);
+              const secondHalfChars = companyText.substring(halfLen);
+              if (firstHalfChars === secondHalfChars) {
+                companyText = firstHalfChars;
+                console.log(`  ✂️ Dedup method 2 (chars): "${companyText}"`);
+              }
+            }
+
+            potentialCompanies.push(companyText);
           }
         }
 
