@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save to Notion</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 400px;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      color: #2c3e50;
+      background: #f8f9fa;
+      border: 1px solid #e1e4e8;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid #e1e4e8;
+      padding: 16px 20px;
+    }
+
+    .header-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #586069;
+      letter-spacing: 0.3px;
+    }
+
+    .content {
+      padding: 20px;
+      background: #ffffff;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #586069;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #d1d5da;
+      border-radius: 5px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #ffffff;
+      color: #24292e;
+      transition: all 0.15s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #0366d6;
+      box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.08);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #959da5;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.5;
+    }
+
+    .url-display {
+      padding: 9px 12px;
+      background: #f6f8fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 5px;
+      font-size: 12px;
+      color: #586069;
+      word-break: break-all;
+      font-family: 'SF Mono', 'Consolas', monospace;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 16px;
+      border: 1px solid;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #saveBtn {
+      background: #2c5282;
+      color: #ffffff;
+      border-color: #2c5282;
+    }
+
+    #saveBtn:hover:not(:disabled) {
+      background: #2a4365;
+      border-color: #2a4365;
+    }
+
+    #saveBtn:active:not(:disabled) {
+      background: #1e3a56;
+    }
+
+    #cancelBtn {
+      background: #ffffff;
+      color: #586069;
+      border-color: #d1d5da;
+    }
+
+    #cancelBtn:hover:not(:disabled) {
+      background: #f6f8fa;
+      border-color: #c1c5c9;
+    }
+
+    .status-message {
+      padding: 10px 12px;
+      border-radius: 5px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      display: none;
+      border-left: 3px solid;
+    }
+
+    .status-message.success {
+      background: #e6f4ea;
+      color: #1e7e34;
+      border-color: #34a853;
+    }
+
+    .status-message.error {
+      background: #fce8e6;
+      color: #c5221f;
+      border-color: #ea4335;
+    }
+
+    .status-message.loading {
+      background: #e8f0fe;
+      color: #185abc;
+      border-color: #4285f4;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(66, 133, 244, 0.2);
+      border-top-color: #4285f4;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-title">LinkedOut</div>
+  </div>
+
+  <div class="content">
+    <div id="statusMessage" class="status-message"></div>
+
+    <form id="profileForm">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required placeholder="John Doe">
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role</label>
+        <input type="text" id="role" name="role" placeholder="Head of Sales">
+      </div>
+
+      <div class="form-group">
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company" placeholder="Acme Inc.">
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" placeholder="Quick notes about this lead..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="url">LinkedIn URL</label>
+        <div class="url-display" id="url"></div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" id="cancelBtn">Cancel</button>
+        <button type="submit" id="saveBtn">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

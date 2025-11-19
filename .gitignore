@@ -1,0 +1,28 @@
+# Notion API credentials
+config.js
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# Node modules (if you add build tools later)
+node_modules/
+npm-debug.log*
+
+# Temporary files
+*.log
+.cache/
