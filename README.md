@@ -1,42 +1,40 @@
 # LinkedOut
 
-Save LinkedIn profiles to your Notion database without the copy-paste dance.
+Capture essential LinkedIn profile info to your Notion database without the copy-paste dance across tabs.
 
-## What It Does
+Built with Claude Code. I'm a creative writer with little background in CS who's taken up vibe coding for funsies. Sorry if the codebase is messy, I'm learning. Feel free to callout better approaches or techniques!
 
-You're on someone's LinkedIn. They're interesting. You want to remember them. LinkedOut grabs their name, role, and company—then drops it straight into your Notion database.
+## Function
 
-Two clicks. Done.
+You're on someone's LinkedIn. They're interesting. You want to remember them. LinkedOut grabs their name, role, company, profile URL  and drops it straight into your Notion database.
 
-## Why It's Better
+1. Click the extension icon. 
+2. Small pop-up shows data parsed into Name, Role, Company, URL fields. Also gives a custom Notes box.  
+3. Click save.
+4. Creates a new line with the info in your Notion database. 
 
-- **Actually editable**: The popup shows what it found. If LinkedIn's being weird (or someone wrote "Hustler | Grinder | Dream Chaser" as their headline), you can fix it before it hits Notion
-- **Smart about it**: Pulls from the official Experience section first—the stuff people actually keep current. Falls back to their headline if needed
-- **Handles LinkedIn's quirks**: Deduplicates text, parses different formats ("at" vs "@" vs comma), skips dates that look like companies
-- **Minimal design**: Clean popup that doesn't get in your way
+* Pop-up window is editable, so you can make sure the entry is clean before it hits your Notion. This step helps if LinkedIn is being weird 		  or someone has 'Hustler | Grinder | Helping You Achieve Your Dreams' in their subhead.
+* Prioritizes data capture from the official 'Experience' section first, and  falls back to their custom subhead (below their name) if needed.
 
-## How to Use It
 
-1. See someone interesting on LinkedIn
-2. Click the LinkedOut icon
-3. Check the popup (name, role, company are auto-filled)
-4. Edit if needed, hit Save
-5. They're in your Notion database
+## Good For
 
-That's it.
+Me. I built this to augment my networking and lead-prospecting workflow. Stay in research mode, then shift to data cleanup and followup mode. 
+
+Might be good for you too...? I'm sure Sales professionals have all manner of enterprise-level tools for pipeline building and lead generation, but this one is clean, simple, and free.
 
 ## Setup
 
 ### Get the Extension Running
 
-**Works on Chrome, Brave, Edge, Arc—anything Chromium-based:**
+**Works on Chromium-based browsers**
 
 1. Download this repo
 2. Open your browser's extensions page:
    - Chrome: `chrome://extensions`
    - Brave: `brave://extensions`
    - Edge: `edge://extensions`
-3. Flip on "Developer mode" (top right)
+3. Toggle on "Developer mode" 
 4. Click "Load unpacked"
 5. Point it at the folder you downloaded
 
@@ -51,28 +49,35 @@ Notion needs permission to let the extension write to your database.
 3. Name it whatever (I use "LinkedOut")
 4. Pick your workspace
 5. Hit Submit
-6. Copy that long token (starts with `ntn_`)—you'll need it in a sec
+6. Copy that long token
 
 #### Set Up Your Database
 
 1. In Notion, create a database (table view works best)
 2. Add these columns:
-   - **Name** (Title)
+   - **Name** (Title)(Default Notion Database property; cannot be deleted)
    - **Role** (Text)
    - **Company** (Text)
    - **LinkedIn** (URL)
+   - **Notes** (Text)
 3. Click the "..." menu on your database → Connections → Add your LinkedOut integration
 4. Grab the database ID from the URL—it's that long random string between your workspace name and the `?v=`
 
-#### Drop Your Credentials Into the Code
+#### Add Your Credentials
 
-1. Open `background.js` in the extension folder
-2. Lines 4-5 have placeholders—swap them out:
+1. In the extension folder, copy `config.example.js` to create a new file called `config.js`
+2. Open `config.js` and add your credentials:
    ```javascript
-   const NOTION_API_TOKEN = 'your_actual_token_here';
-   const NOTION_DATABASE_ID = 'your_actual_database_id_here';
+   const CONFIG = {
+     NOTION_API_TOKEN: 'ntn_your_actual_token_here',
+     NOTION_DATABASE_ID: 'your_actual_database_id_here',
+     NOTION_VERSION: '2022-06-28'
+   };
    ```
-3. Reload the extension in your browser
+3. Save the file
+4. Reload the extension in your browser
+
+**Note**: `config.js` is gitignored, so your credentials stay local and won't be pushed to GitHub if you fork or contribute.
 
 Now you're cooking.
 
@@ -117,19 +122,18 @@ Built with Chrome Extension Manifest V3. Uses:
 - `notifications` and `storage` (for future features)
 - Notion API v2022-06-28
 
-Chromium browsers only (sorry Firefox folks—different extension system).
-
 ## Files
 
 ```
-linkedin-to-notion-extension/
+LinkedOut/
 ├── manifest.json          # Extension config
 ├── background.js          # Does the scraping and Notion API stuff
 ├── popup.html            # What you see when you click the icon
 ├── popup.js              # Popup logic
 ├── content.js            # Helper (mostly unused)
 ├── icons/                # Extension icons
-├── config.example.js     # Example for config setup
+├── config.example.js     # Template for your credentials
+├── config.js             # Your actual credentials (gitignored, you create this)
 ├── .gitignore            # Keeps secrets out of git
 └── README.md             # You're reading it
 ```

@@ -1,10 +1,11 @@
-// Notion API configuration
-// IMPORTANT: Add your credentials here before using the extension
-// Get your integration token from: https://www.notion.so/my-integrations
-// Get your database ID from your database URL
-const NOTION_API_TOKEN = 'your_notion_integration_token_here';
-const NOTION_DATABASE_ID = 'your_notion_database_id_here';
-const NOTION_VERSION = '2022-06-28';
+// Load configuration from config.js
+// IMPORTANT: Copy config.example.js to config.js and add your credentials
+// config.js is gitignored so your secrets stay safe
+importScripts('config.js');
+
+const NOTION_API_TOKEN = CONFIG.NOTION_API_TOKEN;
+const NOTION_DATABASE_ID = CONFIG.NOTION_DATABASE_ID;
+const NOTION_VERSION = CONFIG.NOTION_VERSION;
 
 console.log('🚀 LinkedOut: Background script loaded');
 
